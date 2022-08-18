@@ -6,6 +6,13 @@ public class Conta {
     private Pessoa pessoa;
     private double saldo;
     private double limite;
+    
+    public Conta() {
+    	this.numero = this.numeroDaConta();
+    	this.pessoa = null;
+    	this.saldo = 0;
+    	this.limite = 0;
+    }
 
     public Conta(Pessoa dono) {
         this.pessoa = dono;
@@ -46,7 +53,6 @@ public class Conta {
     public void imprimir() {
         System.out.println("#### Conta do Cliente ##########");
         System.out.println("Número da Conta: " + this.numero + " (de " + contadorDeContas + " contas)");
-        //System.out.println("Nome: " + this.pessoa);
         this.pessoa.imprimir();
         System.out.println("Saldo: " + this.saldo + "(Limite: " + this.limite + ")");
         System.out.println("################################");

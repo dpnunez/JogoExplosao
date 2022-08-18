@@ -4,9 +4,19 @@ public class Telefone {
 	private String ddd;
 	private String numero;
 	
+	public Telefone() {
+		this.ddd = null;
+		this.numero = null;
+	}
+	
 	public Telefone(String ddd, String numero) {
 		this.ddd = ddd;
 		this.numero = numero;
+	}
+	
+	public Telefone(Telefone cp ) {
+		this.ddd = cp.getDdd();
+		this.numero = cp.getNumero();
 	}
 
 	public String getDdd() {

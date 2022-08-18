@@ -9,6 +9,13 @@ public class Pessoa {
     private Telefone telefone;
     private LocalDate dataNascimento;
     
+    public Pessoa() {
+    	this.nome = null;
+    	this.endereco = null;
+    	this.telefone = null;
+    	this.dataNascimento = null;
+    }
+    
     public Pessoa(String nome, Endereco ed, Telefone telefone, LocalDate data) {
         this.nome = nome;
         this.endereco = ed;
@@ -16,9 +23,28 @@ public class Pessoa {
         this.dataNascimento = data;
     }
     
+    public Pessoa(Pessoa cp) {
+    	this.nome = cp.getNome();
+    	this.endereco = cp.getEndereco();
+    	this.dataNascimento = cp.getDataNascimento();
+    	this.telefone = cp.getTelefone();
+    }
+    
     public String getNome() {
         return nome;
     }
+    
+    public Endereco getEndereco() {
+		return endereco;
+	}
+    
+    public LocalDate getDataNascimento() {
+		return dataNascimento;
+	}
+    
+    public Telefone getTelefone() {
+		return telefone;
+	}
     
     public void imprimir() {
     	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
