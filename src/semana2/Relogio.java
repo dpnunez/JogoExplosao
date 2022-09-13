@@ -3,6 +3,7 @@ package semana2;
 public class Relogio {
 	private int horas;
 	private int minutos;
+	// Refatorar para estrutura de contador;
 	
 	public void atualizaVisor() {
 		System.out.println(String.format("%02d", this.horas) + ":" + String.format("%02d", this.minutos));

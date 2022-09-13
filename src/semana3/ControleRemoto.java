@@ -5,8 +5,16 @@ package semana3;
 public class ControleRemoto {
 	private Tv televisao;
 	
+	public ControleRemoto() {
+		this.televisao = null;
+	}
+	
 	public ControleRemoto(Tv tv) {
 		this.televisao = tv;
+	}
+	
+	public ControleRemoto(ControleRemoto cp) {
+		this.televisao = cp.getTelevisao();
 	}
 	
 	public boolean aumentarVolume() {
@@ -27,5 +35,13 @@ public class ControleRemoto {
 	
 	public boolean trocarCanal(int canal) {
 		return televisao.setCanal(canal);
+	}
+	
+	public Tv getTelevisao() {
+		return televisao;
+	}
+	
+	public void setTelevisao(Tv televisao) {
+		this.televisao = televisao;
 	}
 }
