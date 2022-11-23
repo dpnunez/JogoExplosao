@@ -10,6 +10,7 @@ public class JogoDaExplosao {
     private final List<Jogador> jogadores;
     private int indexJogadorAtual;
     private final Random randSeed;
+    private Jogador ganhador;
     
     public JogoDaExplosao(Dado d, Tabuleiro t, List<Jogador> jogadores) {
         this.tabuleiro = t;
@@ -41,19 +42,24 @@ public class JogoDaExplosao {
     public List<Jogador> getJogadores() {
         return jogadores;
     }
+
+    public Jogador getGanhador() {
+        return ganhador;
+    }
     
     public void tratativaValorDado(int valor, Jogador j) {
+        System.out.println("Dado resultado foi " + valor);
         PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
-        if(valor<=2) {
-            // 0 1 2 andar
-            System.out.println("Andar " + (valor + 1) + " casa");
-            System.out.println(j.getNome() + " começou na casa x: " + posicaoAtualJogador.getX() + " y: " + posicaoAtualJogador.getY());
+        if(valor<=3) {
+            System.out.println("Andar " + valor);
+            // 1 2 3 andar
             int construidas=0;
             // andar(valor+1)
-            while(construidas<=valor ) {
+            while(construidas<valor ) {
                 posicaoAtualJogador = posicaoAtualJogador.getProximaPosicao();
                 if(posicaoAtualJogador.getX() == j.getPosicaoInicialX() && posicaoAtualJogador.getY() == j.getPosicaoInicialY()) {
                     System.out.println("GANHOU");
+                    this.ganhador = j;
                     break;
                     
                 }
@@ -66,13 +72,18 @@ public class JogoDaExplosao {
             j.setPosicaoX(posicaoAtualJogador.getX());
             j.setPosicaoY(posicaoAtualJogador.getY());
             
-            System.out.println("Jogador " + j.getNome() + " foi para casa: x:" + j.getPosicaoX() + " y: " + j.getPosicaoY() );
-            
-        } else if (valor <=4) {
-            // 3 4 = bomba
-//            int ladoId = this.randSeed.nextInt(4); 
-            int ladoId = 0;// MOCKADO = EXPLODIR TOPO
-            System.out.println("BOMBAAA!!");
+        } else if (valor <=5) {
+            // 4 5 = bomba
+            int ladoId = this.randSeed.nextInt(4);
+            String ladoString = "gerando";
+            switch (ladoId) {
+                case 0 -> ladoString = "topo";
+                case 1 -> ladoString = "base";
+                case 2 -> ladoString = "direito";
+                case 3 -> ladoString = "esquerdo";
+            }
+
+            System.out.println("BOMBAAA!! destruindo o lado " + ladoString);
             this.tabuleiro.explodirLado(ladoId); 
             
             // verificar se algum jogador está no lado explodido
@@ -100,19 +111,46 @@ public class JogoDaExplosao {
                 }
                 
                 if(pontoDeSalvamento != null) {
-                     System.out.println("VOLTANDO " + jogador.getNome());
-                     System.out.println("para x: " + pontoDeSalvamento.getX() + " y: " + pontoDeSalvamento.getY());
+                    System.out.println("O jogador " + jogador.getNome() + " caiu da ponte! ");
+                    System.out.println("voltando para x: " + pontoDeSalvamento.getX() + " y: " + pontoDeSalvamento.getY());
                     jogador.setPosicaoX(pontoDeSalvamento.getX());
                     jogador.setPosicaoY(pontoDeSalvamento.getY());
                 }
             }
+        } else {
+            System.out.println("PODERES, AINDA NAO IMPLEMENTADOS");
         }
     
     }
     
+    public String getMenu() {
+        return """
+               1 - Girar dado
+               2 - listar poderes
+               3 - usar poder""";
+    }
     
+    public void getPosicoesJogadores() {
+        for(int i=0; i<jogadores.size(); i++) {
+            Jogador j = jogadores.get(i);
+            String nome = j.getNome();
+            int x, y;
+            x = j.getPosicaoX();
+            y = j.getPosicaoY();
+            System.out.println(nome + " está nas coordenadas X: " + x + " | Y: " + y);
+        }
+    }
     
-    
+    public void tratarEscolha(int escolha) {
+        switch (escolha) {
+            case 0:
+            case 1:
+            case 2:
+            default:
+                int valor = this.dado.rodar();
+                this.tratativaValorDado(valor, this.getJogadorAtual());
+        }
+    }
     
     
     
@@ -128,16 +166,22 @@ public class JogoDaExplosao {
     public static void main(String[] args) {
         
         Scanner entrada = new Scanner(System.in);
+        System.out.println("""
+                           Bem vindo ao Jogo Explosao Estrela!
+                           Inicialmente voc\u00ea deve definir as especifica\u00e7oes da partida a ser jogada, como dimensoes do tabuleiro, quantidade de jogadores e seus nomes.Tenha um bom jogo
+                           """);
         
+        
+        // validaçao int
         System.out.println("Informe as dimensoes do jogo: ");
         int dimensao = entrada.nextInt();
         
+        // validaçao int
         System.out.println("Informe a quantidade de jogadores (max. 4, valores maiores serao arredondados para 4): ");
         int numeroJogadores = entrada.nextByte();     numeroJogadores = numeroJogadores > 4 ? 4 : numeroJogadores;
         if(numeroJogadores > 4) {
             numeroJogadores = 4;
         }
-        
         
         
         entrada.nextLine();
@@ -175,38 +219,31 @@ public class JogoDaExplosao {
         
         Dado d = new Dado();
         Tabuleiro t = new Tabuleiro(dimensao);
+        int escolha;
         
         
         JogoDaExplosao jogo = new JogoDaExplosao(d, t, jogadores);
-        jogo.getTabuleiro().printBoardOnConsole();
         
-        
-        
-        System.out.println(jogo.getJogadorAtual());
-        jogo.tratativaValorDado(2, jogo.getJogadorAtual());
-        jogo.getTabuleiro().printBoardOnConsole();
-        
-        
-        
-        jogo.mudarJogador();
-        System.out.println(jogo.getJogadorAtual());
-        jogo.tratativaValorDado(2, jogo.getJogadorAtual());
-   
-        System.out.println(jogo.getJogadorAtual());
-        jogo.getTabuleiro().printBoardOnConsole();
-        
-        jogo.tratativaValorDado(4, jogo.getJogadorAtual());
-        jogo.getTabuleiro().printBoardOnConsole();
-        System.out.println(jogo.getJogadorAtual());
-        
-        jogo.mudarJogador();
-        jogo.tratativaValorDado(2, jogo.getJogadorAtual());
-        jogo.getTabuleiro().printBoardOnConsole();
-        
-        jogo.tratativaValorDado(2, jogo.getJogadorAtual());
-        jogo.getTabuleiro().printBoardOnConsole();
+        while(true) {
+            System.out.println("Estado do tabuleiro: ");
+            jogo.getTabuleiro().printBoardOnConsole();
+            System.out.println("Estado dos jogadores: ");
+            jogo.getPosicoesJogadores();
+            System.out.println("\nJogador atual: " + jogo.getJogadorAtual().getNome());
 
-        
+            System.out.println("\n");
+
+            System.out.println(jogo.getMenu());
+            System.out.print(">");
+            escolha = entrada.nextByte();
+            jogo.tratarEscolha(escolha);
+            if(jogo.getGanhador() != null) {
+                System.out.println(jogo.getGanhador().getNome() + " GANHOU!!");
+                break;
+            }
+            
+            jogo.mudarJogador();
+        }    
     }
     
 }

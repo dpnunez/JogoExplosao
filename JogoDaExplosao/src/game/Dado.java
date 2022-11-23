@@ -12,7 +12,7 @@ public class Dado {
     }
     
     public int rodar() {
-        this.valorAtual = this.randSeed.nextInt(this.lados);
+        this.valorAtual = this.randSeed.nextInt(this.lados) + 1;
         return this.valorAtual;
     }
 

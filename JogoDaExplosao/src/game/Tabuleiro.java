@@ -102,6 +102,7 @@ public class Tabuleiro {
     }
     
     public void printBoardOnConsole() {
+        
         for(int linha=0; linha<this.dimensaoTabuleiro; linha++) {
             for(int coluna=0; coluna<this.dimensaoTabuleiro; coluna++) {
                 PosicaoTabuleiro posicao = posicoes[linha][coluna];
