@@ -14,6 +14,8 @@ public class Jogador {
     private int posicaoY;
     private final int posicaoInicialX;
     private final int posicaoInicialY;
+    private Item passivo;
+    private Item instantaneo;
     
     public Jogador(String n, int x, int y) {
         this.nome = n;
@@ -21,6 +23,11 @@ public class Jogador {
         this.posicaoInicialY = y;
         this.posicaoX = x;
         this.posicaoY = y;
+    }
+    
+    public void listaPoderes(){
+        System.out.println("Poder Passivo: " + getPoderPassivo());
+        System.out.println("Pode Instantâneo: " + getPoderInstantaneo());
     }
 
     public int getPosicaoX() {
@@ -38,6 +45,14 @@ public class Jogador {
     public int getPosicaoInicialY() {
         return posicaoInicialY;
     }
+    
+    public Item getPoderInstantaneo(){
+        return this.instantaneo;
+    }
+    
+    public Item getPoderPassivo(){
+        return this.passivo;
+    }
 
     public void setPosicaoX(int posicaoX) {
         this.posicaoX = posicaoX;
@@ -47,9 +62,13 @@ public class Jogador {
         this.posicaoY = posicaoY;
     }
     
+    public void setPassivo(Item x){
+        this.passivo = x;
+    }
     
-    
-    
+    public void setInstantaneo(Item y){
+        this.instantaneo = y;
+    }
 
     public String getNome() {
         return nome;

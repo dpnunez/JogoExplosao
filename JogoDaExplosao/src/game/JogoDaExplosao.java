@@ -118,7 +118,41 @@ public class JogoDaExplosao {
                 }
             }
         } else {
-            System.out.println("PODERES, AINDA NAO IMPLEMENTADOS");
+            Jogador jog;
+            int poder = this.randSeed.nextInt(6);
+            switch (poder) {
+                case 0 : 
+                    jog = getJogadorAtual();
+                    jog.setPassivo(new AsasDeIcaro());
+                    System.out.println("Jogador " + jog.getNome() + " adquiriu um item passivo: AsasDeIcaro");
+                break;
+                case 1:
+                    jog = getJogadorAtual();
+                    jog.setPassivo(new Escudo());
+                    System.out.println("Jogador " + jog.getNome() + " adquiriu um item passivo: Escudo");
+                break;
+                case 2:
+                    jog = getJogadorAtual();
+                    jog.setPassivo(new Empurrar());
+                    System.out.println("Jogador " + jog.getNome() + " adquiriu um item passivo: Empurrar");
+                break;
+                case 3:
+                    jog = getJogadorAtual();
+                    jog.setInstantaneo(new Imobilizar());
+                    System.out.println("Jogador " + jog.getNome() + " adquiriu um item instantâneo: Imobilizar");
+                break;
+                case 4:
+                    jog = getJogadorAtual();
+                    jog.setInstantaneo(new Velocidade());
+                    System.out.println("Jogador " + jog.getNome() + " adquiriu um item instantâneo: Velocidade");
+                break;
+                case 5:
+                    jog = getJogadorAtual();
+                    jog.setInstantaneo(new Sabotar("Sabotar"));
+                    System.out.println("Jogador " + jog.getNome() + " adquiriu um item instantâneo: Sabotar");
+                break;
+            }
+            
         }
     
     }
@@ -140,15 +174,32 @@ public class JogoDaExplosao {
             System.out.println(nome + " está nas coordenadas X: " + x + " | Y: " + y);
         }
     }
-    
+    //Bruno: Não entendi muito bem ess
     public void tratarEscolha(int escolha) {
+        
+        int valor;
+        
         switch (escolha) {
-            case 0:
-            case 1:
-            case 2:
-            default:
-                int valor = this.dado.rodar();
-                this.tratativaValorDado(valor, this.getJogadorAtual());
+        case 1: //Lança o dado
+            valor = this.dado.rodar();
+            this.tratativaValorDado(valor, this.getJogadorAtual());
+            break;
+        case 2: //Lista os poderes
+            getJogadorAtual().listaPoderes();
+            Scanner entrada = new Scanner(System.in);
+            System.out.println("""
+               1 - Girar dado
+               3 - usar poder""");
+            System.out.print(">");
+            escolha = entrada.nextByte();
+            tratarEscolha(escolha);
+        break;
+        case 3: //Usa os poderes
+            
+        break;
+        default: //Se tudo der errado lança o dado
+            valor = this.dado.rodar();
+            this.tratativaValorDado(valor, this.getJogadorAtual());
         }
     }
     
