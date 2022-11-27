@@ -23,7 +23,8 @@ public class Tabuleiro {
         for(int linha=0; linha<dimensao; linha++)
             for(int coluna=0; coluna<dimensao; coluna++) {
                 PosicaoTabuleiro proxima;
-                PosicaoTabuleiro pontoDeSalvamentoMaisProximo = null;
+                PosicaoTabuleiro pontoDeSalvamentoAnterior = null;
+                PosicaoTabuleiro pontoDeSalvamentoPosterior = null;
                 if(this.posicoes[linha][coluna].getJogavel()) {
                     if(linha == 0 && coluna == 0) {
                         proxima = this.posicoes[0][1];
@@ -35,25 +36,32 @@ public class Tabuleiro {
                         proxima = this.posicoes[dimensao-2][0];
                     } else if(linha == 0) {
                         // topo
-                        pontoDeSalvamentoMaisProximo = this.posicoes[0][0];
+                        pontoDeSalvamentoAnterior = this.posicoes[0][0];
+                        pontoDeSalvamentoPosterior = this.posicoes[0][dimensao - 1];
                         proxima = this.posicoes[linha][coluna+1];
                     } else if(linha == dimensao-1) {
                         // baixo
-                        pontoDeSalvamentoMaisProximo = this.posicoes[dimensao-1][dimensao-1];
+                        pontoDeSalvamentoAnterior = this.posicoes[dimensao-1][dimensao-1];
+                        pontoDeSalvamentoPosterior = this.posicoes[dimensao-1][0];
                         proxima = this.posicoes[linha][coluna-1];
                     } else if(coluna == 0) {
                         // esquerda
-                        pontoDeSalvamentoMaisProximo = this.posicoes[dimensao-1][0];
+                        pontoDeSalvamentoAnterior = this.posicoes[dimensao-1][0];
+                        pontoDeSalvamentoPosterior = this.posicoes[0][0];
                         proxima = this.posicoes[linha-1][coluna];
                     } else {
                         // direita
-                        pontoDeSalvamentoMaisProximo = this.posicoes[0][dimensao-1];
+                        pontoDeSalvamentoAnterior = this.posicoes[0][dimensao-1];
+                        pontoDeSalvamentoPosterior = this.posicoes[dimensao-1][dimensao-1];
                         proxima = this.posicoes[linha+1][coluna];
                     }
                     
                     this.posicoes[linha][coluna].setProximaPosicao(proxima);
-                    if(pontoDeSalvamentoMaisProximo != null) {
-                        this.posicoes[linha][coluna].setPontoDeSalvamentoMaisProximo(pontoDeSalvamentoMaisProximo);
+                    if(pontoDeSalvamentoAnterior != null) {
+                        this.posicoes[linha][coluna].setPontoDeSalvamentoAnterior(pontoDeSalvamentoAnterior);
+                    }
+                    if(pontoDeSalvamentoPosterior != null) {
+                        this.posicoes[linha][coluna].setPontoDeSalvamentoPosterior(pontoDeSalvamentoPosterior);
                     }
                     
                 }

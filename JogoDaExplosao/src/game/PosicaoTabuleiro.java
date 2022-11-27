@@ -7,7 +7,8 @@ public class PosicaoTabuleiro {
     private final boolean pontoDeSalvamento;       // regra default sao os cantos
     private boolean construida;
     private PosicaoTabuleiro proximaPosicao;
-    private PosicaoTabuleiro pontoDeSalvamentoMaisProximo;
+    private PosicaoTabuleiro pontoDeSalvamentoAnterior;
+    private PosicaoTabuleiro pontoDeSalvamentoPosterior;
     
     public PosicaoTabuleiro(int x, int y, boolean jogavel, boolean pontoDeSalvamento) {
         this.x = x;
@@ -49,12 +50,20 @@ public class PosicaoTabuleiro {
         this.construida = construida;
     }
 
-    public void setPontoDeSalvamentoMaisProximo(PosicaoTabuleiro pontoDeSalvamentoMaisProximo) {
-        this.pontoDeSalvamentoMaisProximo = pontoDeSalvamentoMaisProximo;
+    public void setPontoDeSalvamentoAnterior(PosicaoTabuleiro pontoDeSalvamentoAnterior) {
+        this.pontoDeSalvamentoAnterior = pontoDeSalvamentoAnterior;
     }
 
-    public PosicaoTabuleiro getPontoDeSalvamentoMaisProximo() {
-        return pontoDeSalvamentoMaisProximo;
+    public PosicaoTabuleiro getPontoDeSalvamentoAnterior() {
+        return pontoDeSalvamentoAnterior;
+    }
+
+    public PosicaoTabuleiro getPontoDeSalvamentoPosterior() {
+        return pontoDeSalvamentoPosterior;
+    }
+
+    public void setPontoDeSalvamentoPosterior(PosicaoTabuleiro pontoDeSalvamentoPosterior) {
+        this.pontoDeSalvamentoPosterior = pontoDeSalvamentoPosterior;
     }
     
     

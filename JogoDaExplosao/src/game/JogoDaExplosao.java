@@ -47,76 +47,91 @@ public class JogoDaExplosao {
         return ganhador;
     }
     
-    public void tratativaValorDado(int valor, Jogador j) {
-        System.out.println("Dado resultado foi " + valor);
-        PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
-        if(valor<=3) {
-            System.out.println("Andar " + valor);
-            // 1 2 3 andar
-            int construidas=0;
-            // andar(valor+1)
-            while(construidas<valor ) {
-                posicaoAtualJogador = posicaoAtualJogador.getProximaPosicao();
-                if(posicaoAtualJogador.getX() == j.getPosicaoInicialX() && posicaoAtualJogador.getY() == j.getPosicaoInicialY()) {
-                    System.out.println("GANHOU");
-                    this.ganhador = j;
-                    break;
-                    
-                }
-                if(!posicaoAtualJogador.getConstruida()) {
-                    construidas++;
-                    posicaoAtualJogador.setConstruida(true);
-                }
-            }
-            
-            j.setPosicaoX(posicaoAtualJogador.getX());
-            j.setPosicaoY(posicaoAtualJogador.getY());
-            
-        } else if (valor <=5) {
-            // 4 5 = bomba
-            int ladoId = this.randSeed.nextInt(4);
-            String ladoString = "gerando";
-            switch (ladoId) {
-                case 0 -> ladoString = "topo";
-                case 1 -> ladoString = "base";
-                case 2 -> ladoString = "direito";
-                case 3 -> ladoString = "esquerdo";
+    public void explodirLado() {
+        int ladoId = this.randSeed.nextInt(4);
+        String ladoString = "gerando";
+        switch (ladoId) {
+            case 0 -> ladoString = "topo";
+            case 1 -> ladoString = "base";
+            case 2 -> ladoString = "direito";
+            case 3 -> ladoString = "esquerdo";
+        }
+
+        System.out.println("BOMBAAA!! destruindo o lado " + ladoString);
+        this.tabuleiro.explodirLado(ladoId); 
+
+        // verificar se algum jogador está no lado explodido
+        for(int i=0; i<this.jogadores.size(); i++) {
+            Jogador jogador = jogadores.get(i);
+            int x = jogador.getPosicaoX();
+            int y = jogador.getPosicaoY();
+
+            //
+            PosicaoTabuleiro posicaoJogador = tabuleiro.getPosicao(x, y);
+            PosicaoTabuleiro pontoDeSalvamento = null;
+            // resetar para o proximo salvamento
+            if(ladoId == 0 && y == 0) {
+                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                // explosao e jogador no topo
+            } else if (ladoId == 1 && y == tabuleiro.getDimensaoTabuleiro() - 1) {
+                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                // explosao e jogador na base
+            } else if (ladoId == 2 && x == tabuleiro.getDimensaoTabuleiro() - 1) {
+                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                // explosao e jogador na direita
+            } else if (ladoId == 3 && x == 0) {
+                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                // explosao e jogador na esquerda
             }
 
-            System.out.println("BOMBAAA!! destruindo o lado " + ladoString);
-            this.tabuleiro.explodirLado(ladoId); 
-            
-            // verificar se algum jogador está no lado explodido
-            for(int i=0; i<this.jogadores.size(); i++) {
-                Jogador jogador = jogadores.get(i);
-                int x = jogador.getPosicaoX();
-                int y = jogador.getPosicaoY();
-                
-                //
-                PosicaoTabuleiro posicaoJogador = tabuleiro.getPosicao(x, y);
-                PosicaoTabuleiro pontoDeSalvamento = null;
-                // resetar para o proximo salvamento
-                if(ladoId == 0 && y == 0) {
-                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoMaisProximo();
-                    // explosao e jogador no topo
-                } else if (ladoId == 1 && y == tabuleiro.getDimensaoTabuleiro() - 1) {
-                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoMaisProximo();
-                    // explosao e jogador na base
-                } else if (ladoId == 2 && x == tabuleiro.getDimensaoTabuleiro() - 1) {
-                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoMaisProximo();
-                    // explosao e jogador na direita
-                } else if (ladoId == 3 && x == 0) {
-                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoMaisProximo();
-                    // explosao e jogador na esquerda
-                }
-                
-                if(pontoDeSalvamento != null) {
+            if(pontoDeSalvamento != null) {
+                if(jogador.getPoderPassivo() instanceof AsasDeIcaro) {
+                    System.out.println("O jogador " + jogador.getNome() + " Cairia na ponte, mas tem asas de icaro! ");
+                    jogador.setPosicaoX(posicaoJogador.getPontoDeSalvamentoPosterior().getX());
+                    jogador.setPosicaoY(posicaoJogador.getPontoDeSalvamentoPosterior().getY());
+                    jogador.setPassivo(null);
+                } else {
                     System.out.println("O jogador " + jogador.getNome() + " caiu da ponte! ");
                     System.out.println("voltando para x: " + pontoDeSalvamento.getX() + " y: " + pontoDeSalvamento.getY());
                     jogador.setPosicaoX(pontoDeSalvamento.getX());
                     jogador.setPosicaoY(pontoDeSalvamento.getY());
                 }
             }
+        }
+    }
+    
+    public void andar(int valor, Jogador j) {
+        PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
+        System.out.println("Andar " + valor);
+            // 1 2 3 andar
+        int construidas=0;
+        // andar(valor+1)
+        while(construidas<valor ) {
+            posicaoAtualJogador = posicaoAtualJogador.getProximaPosicao();
+            if(posicaoAtualJogador.getX() == j.getPosicaoInicialX() && posicaoAtualJogador.getY() == j.getPosicaoInicialY()) {
+                System.out.println("GANHOU");
+                this.ganhador = j;
+                break;
+
+            }
+            if(!posicaoAtualJogador.getConstruida()) {
+                construidas++;
+                posicaoAtualJogador.setConstruida(true);
+            }
+        }
+
+        j.setPosicaoX(posicaoAtualJogador.getX());
+        j.setPosicaoY(posicaoAtualJogador.getY());
+        
+    }
+    
+    public void tratativaValorDado(int valor, Jogador j) {
+        System.out.println("Dado resultado foi " + valor);
+        if(valor<=3) {
+            this.andar(valor, j);
+        } else if (valor <=5) {
+            // 4 5 = bomba
+            this.explodirLado();
         } else {
             
             int poder = this.randSeed.nextInt(6);
@@ -168,15 +183,15 @@ public class JogoDaExplosao {
             System.out.println(nome + " está nas coordenadas X: " + x + " | Y: " + y);
         }
     }
-    //Bruno: Não entendi muito bem ess
+    
+  
     public void tratarEscolha(int escolha) {
-        
         int valor;
         
         switch(escolha) {
         case 1 -> {
             //Lança o dado
-            valor = 6;
+            valor = this.dado.rodar();
             this.tratativaValorDado(valor, this.getJogadorAtual());
             }
         case 2 -> {
@@ -189,7 +204,7 @@ public class JogoDaExplosao {
             this.tratarEscolha(escolha);
             }
         case 3 -> {
-						//Usa os poderes
+                //Usa os poderes instantaneos
             }
         default -> {
             //Se tudo der errado lança o dado
@@ -291,7 +306,7 @@ public class JogoDaExplosao {
             }
             
             jogo.mudarJogador();
-        }
+        }         
     }
     
 }
