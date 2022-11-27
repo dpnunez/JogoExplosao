@@ -15,6 +15,6 @@ public class Sabotar extends Instantaneo {
     
     @Override
     public String toString() {
-        return "sabotar";
+        return "Sabotar";
     }
 }

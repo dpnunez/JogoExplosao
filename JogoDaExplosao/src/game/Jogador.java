@@ -27,7 +27,7 @@ public class Jogador {
     
     public void listaPoderes(){
         System.out.println("Poder Passivo: " + getPoderPassivo());
-        System.out.println("Pode Instantâneo: " + getPoderInstantaneo());
+        System.out.println("Pode Instantâneo: " + getPoderInstantaneo() + "\n");
     }
 
     public int getPosicaoX() {
