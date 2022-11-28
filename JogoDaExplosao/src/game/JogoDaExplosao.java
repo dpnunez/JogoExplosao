@@ -20,11 +20,17 @@ public class JogoDaExplosao {
         this.randSeed = new Random();
     }
     
-    public void mudarJogador() {
-        this.indexJogadorAtual++;
-        if(this.indexJogadorAtual >= this.jogadores.size()) {
-            this.indexJogadorAtual = 0;
+    public int getIndexProximoJogador() {
+        int i = this.indexJogadorAtual++;
+        if(i >= this.jogadores.size()) {
+            i=0;
         }
+        return i;
+        
+    }
+    
+    public void mudarJogador() {
+        this.indexJogadorAtual = this.getIndexProximoJogador();
     }
     
     public Jogador getJogadorAtual() {
