@@ -11,6 +11,7 @@ public class JogoDaExplosao {
     private int indexJogadorAtual;
     private final Random randSeed;
     private Jogador ganhador;
+    private boolean andarDuplicadoAtivo;
     
     public JogoDaExplosao(Dado d, Tabuleiro t, List<Jogador> jogadores) {
         this.tabuleiro = t;
@@ -18,6 +19,7 @@ public class JogoDaExplosao {
         this.jogadores = jogadores;
         this.indexJogadorAtual = 0;
         this.randSeed = new Random();
+        this.andarDuplicadoAtivo = false;
     }
     
     public int getIndexProximoJogador() {
@@ -133,7 +135,11 @@ public class JogoDaExplosao {
         
     }
     
-    public void andar(int valor, Jogador j) {
+    public void andar(int valorProp, Jogador j) {
+        int valor = valorProp;
+        if(this.andarDuplicadoAtivo) valor = valorProp * 2;
+        if(valor > 6) valor = 6;
+        
         PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
         System.out.println("Jogador " + j.getNome() + " deve andar " + valor);
             // 1 2 3 andar
@@ -173,12 +179,15 @@ public class JogoDaExplosao {
 
         j.setPosicaoX(posicaoAtualJogador.getX());
         j.setPosicaoY(posicaoAtualJogador.getY());
-        
+        if(this.andarDuplicadoAtivo) {
+            System.out.println("Desativando velocidade duplicada");
+            this.andarDuplicadoAtivo = false;
+        }
     }
     
     public void tratativaValorDado(int valor, Jogador j) {
         System.out.println("Dado resultado foi " + valor);
-        if(valor<=3) {
+        if(valor<=3 || this.andarDuplicadoAtivo) {
             this.andar(valor, j);
         } else if (valor <=5) {
             // 4 5 = bomba
@@ -215,14 +224,21 @@ public class JogoDaExplosao {
             }
             
         }
+    }
     
+    public void usarInstantaneo(Jogador j) {
+        if(j.getPoderInstantaneo() instanceof Velocidade) {
+            // usar velocidade
+            System.out.println("Velocidade ativa nessa rodada!");
+            this.andarDuplicadoAtivo = true;
+        }
     }
     
     public String getMenu() {
         return """
                1 - Girar dado
                2 - listar poderes
-               3 - usar poder""";
+               3 - usar instantaneo""";
     }
     
     public void getPosicoesJogadores() {
