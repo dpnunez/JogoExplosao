@@ -131,7 +131,7 @@ public class JogoDaExplosao {
 
                 if(pontoDeSalvamento != null && !posicaoJogador.getPontoDeSalvamento()) {
                     if(jogador.getPoderPassivo() instanceof AsasDeIcaro) {
-                        System.out.println("O jogador " + jogador.getNome() + " Cairia na ponte, mas tem asas de icaro! ");
+                        System.out.println("O jogador " + jogador.getNome() + " cairia na ponte, mas tem asas de icaro! ");
                         jogador.setPosicaoX(posicaoJogador.getPontoDeSalvamentoPosterior().getX());
                         jogador.setPosicaoY(posicaoJogador.getPontoDeSalvamentoPosterior().getY());
                         jogador.setPassivo(null);
