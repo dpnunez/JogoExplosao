@@ -21,7 +21,7 @@ public class JogoDaExplosao {
     }
     
     public int getIndexProximoJogador() {
-        int i = this.indexJogadorAtual++;
+        int i = this.indexJogadorAtual + 1;
         if(i >= this.jogadores.size()) {
             i=0;
         }
@@ -34,7 +34,7 @@ public class JogoDaExplosao {
     }
     
     public Jogador getJogadorAtual() {
-        return this.jogadores.get(indexJogadorAtual);
+        return this.jogadores.get(this.indexJogadorAtual);
     }
 
     public Dado getDado() {
@@ -53,8 +53,7 @@ public class JogoDaExplosao {
         return ganhador;
     }
     
-    public void explodirLado() {
-        int ladoId = this.randSeed.nextInt(4);
+    public void explodirLado(int ladoId) {
         String ladoString = "gerando";
         switch (ladoId) {
             case 0 -> ladoString = "topo";
@@ -106,19 +105,65 @@ public class JogoDaExplosao {
         }
     }
     
+    public void empurar(Jogador jogadorEmpurrando, List<Jogador> listaParaEmpurrar) {
+        Scanner entrada = new Scanner(System.in);
+        System.out.println("Você tem a carta empurrar e está passando por uma casa ocupada por 1 ou mais jogadores, os quais sao: ");
+        for(int i=0; i<listaParaEmpurrar.size(); i++) {
+            System.out.println(i + " - " + listaParaEmpurrar.get(i).getNome());
+        }
+        System.out.println("4 - Nao utilizar empurrar");
+        System.out.print("> ");
+        int escolha = entrada.nextByte();
+        
+        if (escolha >= 0 && escolha < listaParaEmpurrar.size()) {
+            // Empurrar
+            Jogador empurrado = listaParaEmpurrar.get(escolha);
+            int x = empurrado.getPosicaoX();
+            int y = empurrado.getPosicaoY();
+            PosicaoTabuleiro pontoDeSalvamentoAnteriorDoEmpurrado = this.tabuleiro.getPosicao(x, y).getPontoDeSalvamentoAnterior();
+            
+            System.out.println("O jogador " + empurrado.getNome() + " foi empurrado para x: " + pontoDeSalvamentoAnteriorDoEmpurrado.getX() + " y: " + pontoDeSalvamentoAnteriorDoEmpurrado.getY());
+            empurrado.setPosicaoX(pontoDeSalvamentoAnteriorDoEmpurrado.getX());
+            empurrado.setPosicaoY(pontoDeSalvamentoAnteriorDoEmpurrado.getY());
+            
+            jogadorEmpurrando.setPassivo(null);
+        } else {
+            System.out.println("Empurrar nao utilizado");
+        }
+        
+    }
+    
     public void andar(int valor, Jogador j) {
         PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
-        System.out.println("Andar " + valor);
+        System.out.println("Jogador " + j.getNome() + " deve andar " + valor);
             // 1 2 3 andar
         int construidas=0;
         // andar(valor+1)
         while(construidas<valor ) {
             posicaoAtualJogador = posicaoAtualJogador.getProximaPosicao();
+            List<Jogador> jogadoresNaPosicaoAtual = new ArrayList<>(); 
+            
             if(posicaoAtualJogador.getX() == j.getPosicaoInicialX() && posicaoAtualJogador.getY() == j.getPosicaoInicialY()) {
                 System.out.println("GANHOU");
                 this.ganhador = j;
                 break;
-
+            }
+            
+            for(int i=0; i<this.jogadores.size(); i++) {
+                Jogador jVerificar  = this.jogadores.get(i);
+                int posX = jVerificar.getPosicaoX();
+                int posY = jVerificar.getPosicaoY();
+                boolean ehMesmaPosicao =
+                        posX == posicaoAtualJogador.getX() &&
+                        posY == posicaoAtualJogador.getY();
+                if(jVerificar != j && ehMesmaPosicao) {
+                    jogadoresNaPosicaoAtual.add(jVerificar);
+                }
+            }
+            
+            // SE jogadorAtual.passivo == Empurrar e SE tiver outro jogador na posicaoAtual
+            if(j.getPoderPassivo() instanceof Empurrar && !jogadoresNaPosicaoAtual.isEmpty()) {
+                this.empurar(j, jogadoresNaPosicaoAtual);
             }
             if(!posicaoAtualJogador.getConstruida()) {
                 construidas++;
@@ -137,7 +182,8 @@ public class JogoDaExplosao {
             this.andar(valor, j);
         } else if (valor <=5) {
             // 4 5 = bomba
-            this.explodirLado();
+            int ladoId = this.randSeed.nextInt(4);
+            this.explodirLado(ladoId);
         } else {
             
             int poder = this.randSeed.nextInt(6);
@@ -182,11 +228,8 @@ public class JogoDaExplosao {
     public void getPosicoesJogadores() {
         for(int i=0; i<jogadores.size(); i++) {
             Jogador j = jogadores.get(i);
-            String nome = j.getNome();
-            int x, y;
-            x = j.getPosicaoX();
-            y = j.getPosicaoY();
-            System.out.println(nome + " está nas coordenadas X: " + x + " | Y: " + y);
+            
+            System.out.println(j);
         }
     }
     

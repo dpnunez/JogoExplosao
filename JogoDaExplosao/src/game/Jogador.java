@@ -81,7 +81,7 @@ public class Jogador {
     
     @Override
     public String toString() {
-        return this.nome + " | x: " + posicaoX + " y: " + posicaoY; 
+        return this.nome + " | x: " + posicaoX + " y: " + posicaoY + " | passivo: " + this.passivo + " | instantaneo: " + this.instantaneo; 
     }
     
 }
