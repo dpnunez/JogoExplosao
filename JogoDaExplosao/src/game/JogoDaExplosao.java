@@ -87,7 +87,7 @@ public class JogoDaExplosao {
             // Sabotar
             Jogador sabotador = possiveisSabotadores.get(escolhaSabotar);
             System.out.println("Jogador " + sabotador.getNome() + " desarmou a bomba!!!");
-            sabotador.setInstantaneo(null); // remover item do inventário
+            this.usarInstantaneo(sabotador);    // remover item do inventário
         } else {
             if(!possiveisSabotadores.isEmpty()) {
                 System.out.println("Nenhum jogador quis utilizar o sabotar!");
@@ -152,22 +152,28 @@ public class JogoDaExplosao {
         for(int i=0; i<listaParaEmpurrar.size(); i++) {
             System.out.println(i + " - " + listaParaEmpurrar.get(i).getNome());
         }
-        System.out.println("4 - Nao utilizar empurrar");
+        System.out.println("Qualquer outro valor será considerado como 'nao utilizar empurrar'");
         System.out.print("> ");
         int escolha = entrada.nextByte();
         
         if (escolha >= 0 && escolha < listaParaEmpurrar.size()) {
             // Empurrar
             Jogador empurrado = listaParaEmpurrar.get(escolha);
-            int x = empurrado.getPosicaoX();
-            int y = empurrado.getPosicaoY();
-            PosicaoTabuleiro pontoDeSalvamentoAnteriorDoEmpurrado = this.tabuleiro.getPosicao(x, y).getPontoDeSalvamentoAnterior();
+            // verificar se o empurrado tem escudo como item passivo
+            if(empurrado.getPoderPassivo() instanceof Escudo) {
+                System.out.println("O jogador escolhido tem escudo e nao pode ser empurrado!");
+                empurrado.setPassivo(null);
+            } else {
+                int x = empurrado.getPosicaoX();
+                int y = empurrado.getPosicaoY();
+                PosicaoTabuleiro pontoDeSalvamentoAnteriorDoEmpurrado = this.tabuleiro.getPosicao(x, y).getPontoDeSalvamentoAnterior();
             
-            System.out.println("O jogador " + empurrado.getNome() + " foi empurrado para x: " + pontoDeSalvamentoAnteriorDoEmpurrado.getX() + " y: " + pontoDeSalvamentoAnteriorDoEmpurrado.getY());
-            empurrado.setPosicaoX(pontoDeSalvamentoAnteriorDoEmpurrado.getX());
-            empurrado.setPosicaoY(pontoDeSalvamentoAnteriorDoEmpurrado.getY());
-            
+                System.out.println("O jogador " + empurrado.getNome() + " foi empurrado para x: " + pontoDeSalvamentoAnteriorDoEmpurrado.getX() + " y: " + pontoDeSalvamentoAnteriorDoEmpurrado.getY());
+                empurrado.setPosicaoX(pontoDeSalvamentoAnteriorDoEmpurrado.getX());
+                empurrado.setPosicaoY(pontoDeSalvamentoAnteriorDoEmpurrado.getY());
+            }
             jogadorEmpurrando.setPassivo(null);
+            
         } else {
             System.out.println("Empurrar nao utilizado");
         }
@@ -275,6 +281,7 @@ public class JogoDaExplosao {
         for(int i=0; i<lista.size(); i++) {
             System.out.println(i  + " - " + lista.get(i).getNome());
         }
+        System.out.println("Qualquer outro valor será considerado o imobilizado o próximo jogador na ordem de jogadas!");
     }
     
     public void usarInstantaneo(Jogador j) {
@@ -301,8 +308,14 @@ public class JogoDaExplosao {
                 jogadorASerImobilizado = this.jogadores.get(this.getIndexProximoJogador());
             }
             
-            this.usarImobilizar(jogadorASerImobilizado);    
+            if(jogadorASerImobilizado.getPoderPassivo() instanceof Escudo) {
+                System.out.println("O jogador " + jogadorASerImobilizado.getNome() +  " nao pode ser imobilizado pois tem a carta Escudo!");
+                jogadorASerImobilizado.setPassivo(null);
+            } else {
+                this.usarImobilizar(jogadorASerImobilizado);   
+            }
         }
+        
         j.setInstantaneo(null);
     }
     

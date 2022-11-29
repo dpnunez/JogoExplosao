@@ -173,6 +173,57 @@ public class TestSuit {
         System.out.println("=======================\n\n\n\n\n\n");
     }
     
+    public void testeEscudoEmpurrar() {
+        System.out.println("Escudo <> Empurrar: ");
+        
+        List<Jogador> jogadores = new ArrayList<>();
+        jogadores.add(new Jogador("Daniel", 0, 0));
+        jogadores.add(new Jogador("Bruno", 5, 0));
+        Dado d = new Dado();
+        Tabuleiro t = new Tabuleiro(6);
+        
+        JogoDaExplosao jogo = new JogoDaExplosao(d, t, jogadores);
+        jogo.getJogadorAtual().setPassivo(new Empurrar());
+        jogo.mudarJogador();
+        jogo.getJogadorAtual().setPassivo(new Escudo());
+        jogo.andar(2, jogo.getJogadorAtual());
+        jogo.mudarJogador();
+        jogo.andar(6, jogo.getJogadorAtual());
+        
+        System.out.println("Estado do tabuleiro: ");
+        jogo.getTabuleiro().printBoardOnConsole();
+        System.out.println("Estado dos jogadores: ");
+        jogo.getPosicoesJogadores();
+        System.out.println("\nJogador atual: " + jogo.getJogadorAtual().getNome());
+
+        System.out.println("=======================\n\n\n\n\n\n");
+    }
+    
+    public void testeEscudoImobilizar() {
+        System.out.println("Escudo <> Imobilizar: ");
+        
+        List<Jogador> jogadores = new ArrayList<>();
+        jogadores.add(new Jogador("Daniel", 0, 0));
+        jogadores.add(new Jogador("Bruno", 5, 0));
+        Dado d = new Dado();
+        Tabuleiro t = new Tabuleiro(6);
+        
+        JogoDaExplosao jogo = new JogoDaExplosao(d, t, jogadores);
+        jogo.getJogadorAtual().setInstantaneo(new Imobilizar());
+        jogo.mudarJogador();
+        jogo.getJogadorAtual().setPassivo(new Escudo());
+        jogo.mudarJogador();
+        jogo.usarInstantaneo(jogo.getJogadorAtual());
+        
+        System.out.println("Estado do tabuleiro: ");
+        jogo.getTabuleiro().printBoardOnConsole();
+        System.out.println("Estado dos jogadores: ");
+        jogo.getPosicoesJogadores();
+        System.out.println("\nJogador atual: " + jogo.getJogadorAtual().getNome());
+
+        System.out.println("=======================\n\n\n\n\n\n");
+    }
+    
     public static void main(String[] args) {
         TestSuit t = new TestSuit();
         
@@ -183,5 +234,7 @@ public class TestSuit {
         t.testeVelocidade();
         t.testeImobilizar();
         t.testeSabotar();
+        t.testeEscudoEmpurrar();
+        t.testeEscudoImobilizar();
     }
 }
