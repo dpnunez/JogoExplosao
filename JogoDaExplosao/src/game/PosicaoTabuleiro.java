@@ -10,6 +10,7 @@ public class PosicaoTabuleiro {
     private PosicaoTabuleiro pontoDeSalvamentoAnterior;
     private PosicaoTabuleiro pontoDeSalvamentoPosterior;
     
+    
     public PosicaoTabuleiro(int x, int y, boolean jogavel, boolean pontoDeSalvamento) {
         this.x = x;
         this.y = y;

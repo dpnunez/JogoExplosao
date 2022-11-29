@@ -151,6 +151,28 @@ public class TestSuit {
         System.out.println("=======================\n\n\n\n\n\n");
     }
     
+    public void testeSabotar() {
+        System.out.println("Teste Sabotar: ");
+        
+        List<Jogador> jogadores = new ArrayList<>();
+        jogadores.add(new Jogador("Daniel", 0, 0));
+        jogadores.add(new Jogador("Bruno", 5, 0));
+        Dado d = new Dado();
+        Tabuleiro t = new Tabuleiro(6);
+        
+        JogoDaExplosao jogo = new JogoDaExplosao(d, t, jogadores);
+        jogo.getJogadorAtual().setInstantaneo(new Sabotar());
+        jogo.andar(2, jogo.getJogadorAtual());
+        jogo.explodirLado(0);                                               // explodir topo
+        System.out.println("Estado do tabuleiro: ");
+        jogo.getTabuleiro().printBoardOnConsole();
+        System.out.println("Estado dos jogadores: ");
+        jogo.getPosicoesJogadores();
+        System.out.println("\nJogador atual: " + jogo.getJogadorAtual().getNome());
+
+        System.out.println("=======================\n\n\n\n\n\n");
+    }
+    
     public static void main(String[] args) {
         TestSuit t = new TestSuit();
         
@@ -160,5 +182,6 @@ public class TestSuit {
         t.testeEmpurrar();
         t.testeVelocidade();
         t.testeImobilizar();
+        t.testeSabotar();
     }
 }

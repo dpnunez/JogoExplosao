@@ -55,53 +55,92 @@ public class JogoDaExplosao {
         return ganhador;
     }
     
-    public void explodirLado(int ladoId) {
-        String ladoString = "gerando";
-        switch (ladoId) {
-            case 0 -> ladoString = "topo";
-            case 1 -> ladoString = "base";
-            case 2 -> ladoString = "direito";
-            case 3 -> ladoString = "esquerdo";
-        }
-
-        System.out.println("BOMBAAA!! destruindo o lado " + ladoString);
-        this.tabuleiro.explodirLado(ladoId); 
-
-        // verificar se algum jogador está no lado explodido
+    public List<Jogador> getJogadoresComSabotar() {
+        List<Jogador> sabotadores = new ArrayList<>();
         for(int i=0; i<this.jogadores.size(); i++) {
-            Jogador jogador = jogadores.get(i);
-            int x = jogador.getPosicaoX();
-            int y = jogador.getPosicaoY();
-
-            //
-            PosicaoTabuleiro posicaoJogador = tabuleiro.getPosicao(x, y);
-            PosicaoTabuleiro pontoDeSalvamento = null;
-            // resetar para o proximo salvamento
-            if(ladoId == 0 && y == 0) {
-                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
-                // explosao e jogador no topo
-            } else if (ladoId == 1 && y == tabuleiro.getDimensaoTabuleiro() - 1) {
-                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
-                // explosao e jogador na base
-            } else if (ladoId == 2 && x == tabuleiro.getDimensaoTabuleiro() - 1) {
-                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
-                // explosao e jogador na direita
-            } else if (ladoId == 3 && x == 0) {
-                pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
-                // explosao e jogador na esquerda
+            Jogador j = this.jogadores.get(i);
+            if(j.getPoderInstantaneo() instanceof Sabotar) {
+                sabotadores.add(j);
+            }
+        }
+        
+        return sabotadores;
+    }
+    
+    public void explodirLado(int ladoId) {
+        // SE algum jogador tiver a carta instantanea SABOTAR, perguntar se o mesmo quer sabotar a explosao dessa bomba (antes de efetivamente explodir)
+        List<Jogador> possiveisSabotadores = getJogadoresComSabotar();
+        int escolhaSabotar = -1; // -1 = sem escolha (4 pois é o primeiro valor de index fora do range de jogadores
+        
+        if(!possiveisSabotadores.isEmpty()) {
+            Scanner entrada = new Scanner(System.in);
+            System.out.println("Os seguintes jogadores tem a carta Sabotar, os quais podem cancelar a explosao dessa bomba:");
+            for(int i=0; i<possiveisSabotadores.size(); i++) {
+                System.out.println(i+ " - " + possiveisSabotadores.get(i).getNome());
+            }
+            System.out.println("Qualquer outro valor inserido será considerado que nenhum irá usar Sabotar");
+            System.out.print("> ");
+            escolhaSabotar = entrada.nextByte();
+        }
+        
+        if(escolhaSabotar >= 0 && escolhaSabotar < possiveisSabotadores.size()) {
+            // Sabotar
+            Jogador sabotador = possiveisSabotadores.get(escolhaSabotar);
+            System.out.println("Jogador " + sabotador.getNome() + " desarmou a bomba!!!");
+            sabotador.setInstantaneo(null); // remover item do inventário
+        } else {
+            if(!possiveisSabotadores.isEmpty()) {
+                System.out.println("Nenhum jogador quis utilizar o sabotar!");
+            }
+            String ladoString = "gerando";
+            switch (ladoId) {
+                case 0 -> ladoString = "topo";
+                case 1 -> ladoString = "base";
+                case 2 -> ladoString = "direito";
+                case 3 -> ladoString = "esquerdo";
             }
 
-            if(pontoDeSalvamento != null) {
-                if(jogador.getPoderPassivo() instanceof AsasDeIcaro) {
-                    System.out.println("O jogador " + jogador.getNome() + " Cairia na ponte, mas tem asas de icaro! ");
-                    jogador.setPosicaoX(posicaoJogador.getPontoDeSalvamentoPosterior().getX());
-                    jogador.setPosicaoY(posicaoJogador.getPontoDeSalvamentoPosterior().getY());
-                    jogador.setPassivo(null);
-                } else {
-                    System.out.println("O jogador " + jogador.getNome() + " caiu da ponte! ");
-                    System.out.println("voltando para x: " + pontoDeSalvamento.getX() + " y: " + pontoDeSalvamento.getY());
-                    jogador.setPosicaoX(pontoDeSalvamento.getX());
-                    jogador.setPosicaoY(pontoDeSalvamento.getY());
+            System.out.println("BOMBAAA!! destruindo o lado " + ladoString);
+            this.tabuleiro.explodirLado(ladoId); 
+
+            // verificar se algum jogador está no lado explodido
+            for(int i=0; i<this.jogadores.size(); i++) {
+                Jogador jogador = jogadores.get(i);
+                int x = jogador.getPosicaoX();
+                int y = jogador.getPosicaoY();
+
+                //
+                PosicaoTabuleiro posicaoJogador = tabuleiro.getPosicao(x, y);
+                PosicaoTabuleiro pontoDeSalvamento = null;
+                // resetar para o proximo salvamento
+                if(ladoId == 0 && y == 0) {
+                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                    // explosao e jogador no topo
+                } else if (ladoId == 1 && y == tabuleiro.getDimensaoTabuleiro() - 1) {
+                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                    // explosao e jogador na base
+                } else if (ladoId == 2 && x == tabuleiro.getDimensaoTabuleiro() - 1) {
+                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                    // explosao e jogador na direita
+                } else if (ladoId == 3 && x == 0) {
+                    pontoDeSalvamento = posicaoJogador.getPontoDeSalvamentoAnterior();
+                    // explosao e jogador na esquerda
+                }
+                
+                
+
+                if(pontoDeSalvamento != null && !posicaoJogador.getPontoDeSalvamento()) {
+                    if(jogador.getPoderPassivo() instanceof AsasDeIcaro) {
+                        System.out.println("O jogador " + jogador.getNome() + " Cairia na ponte, mas tem asas de icaro! ");
+                        jogador.setPosicaoX(posicaoJogador.getPontoDeSalvamentoPosterior().getX());
+                        jogador.setPosicaoY(posicaoJogador.getPontoDeSalvamentoPosterior().getY());
+                        jogador.setPassivo(null);
+                    } else {
+                        System.out.println("O jogador " + jogador.getNome() + " caiu da ponte! ");
+                        System.out.println("voltando para x: " + pontoDeSalvamento.getX() + " y: " + pontoDeSalvamento.getY());
+                        jogador.setPosicaoX(pontoDeSalvamento.getX());
+                        jogador.setPosicaoY(pontoDeSalvamento.getY());
+                    }
                 }
             }
         }
@@ -224,22 +263,12 @@ public class JogoDaExplosao {
                     System.out.println("Jogador " + j.getNome() + " adquiriu um item instantâneo: Velocidade");
                 }
                 case 5 -> {
-                    j.setInstantaneo(new Sabotar("Sabotar"));
+                    j.setInstantaneo(new Sabotar());
                     System.out.println("Jogador " + j.getNome() + " adquiriu um item instantâneo: Sabotar");
                 }
             }
             
         }
-    }
-    
-    public void usarVelocidade() {
-        System.out.println("Velocidade ativa nessa rodada!");
-        this.andarDuplicadoAtivo = true;
-    }
-    
-    public void usarImobilizar(Jogador imobilizado) {
-        System.out.println("O jogador " + imobilizado.getNome() + " foi imobilizado!");
-        imobilizado.setImovel(true);
     }
     
     public void mostrarListaFiltrada(List<Jogador> lista) {
@@ -275,6 +304,16 @@ public class JogoDaExplosao {
             this.usarImobilizar(jogadorASerImobilizado);    
         }
         j.setInstantaneo(null);
+    }
+    
+    public void usarVelocidade() {
+        System.out.println("Velocidade ativa nessa rodada!");
+        this.andarDuplicadoAtivo = true;
+    }
+    
+    public void usarImobilizar(Jogador imobilizado) {
+        System.out.println("O jogador " + imobilizado.getNome() + " foi imobilizado!");
+        imobilizado.setImovel(true);
     }
     
     public String getMenu() {

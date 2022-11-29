@@ -9,12 +9,12 @@ package game;
  * @author Bruno Chim Silveira
  */
 public class Sabotar extends Instantaneo {
-    public Sabotar(String nome){
-        this.nome = nome;
+    public Sabotar(){
+        this.nome = "Sabotar";
     }
     
     @Override
     public String toString() {
-        return "Sabotar";
+        return this.nome;
     }
 }
