@@ -16,6 +16,7 @@ public class Jogador {
     private final int posicaoInicialY;
     private Item passivo;
     private Item instantaneo;
+    private boolean imovel;
     
     public Jogador(String n, int x, int y) {
         this.nome = n;
@@ -23,6 +24,7 @@ public class Jogador {
         this.posicaoInicialY = y;
         this.posicaoX = x;
         this.posicaoY = y;
+        this.imovel = false;
     }
     
     public void listaPoderes(){
@@ -72,6 +74,15 @@ public class Jogador {
 
     public String getNome() {
         return nome;
+    }
+
+    public void setImovel(boolean imovel) {
+        this.imovel = imovel;
+    }
+    
+ 
+    public boolean getImovel() {
+        return this.imovel;
     }
     
     

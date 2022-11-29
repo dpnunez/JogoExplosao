@@ -27,12 +27,20 @@ public class Tabuleiro {
                 PosicaoTabuleiro pontoDeSalvamentoPosterior = null;
                 if(this.posicoes[linha][coluna].getJogavel()) {
                     if(linha == 0 && coluna == 0) {
+                        pontoDeSalvamentoAnterior = this.posicoes[0][0];
+                        pontoDeSalvamentoPosterior = this.posicoes[0][dimensao - 1];
                         proxima = this.posicoes[0][1];
                     } else if(linha == 0 && coluna == dimensao-1) {
+                        pontoDeSalvamentoAnterior = this.posicoes[0][dimensao-1];
+                        pontoDeSalvamentoPosterior = this.posicoes[dimensao-1][dimensao-1];
                         proxima = this.posicoes[1][dimensao-1];
                     } else if(linha == dimensao-1 && coluna == dimensao-1) {
+                        pontoDeSalvamentoAnterior = this.posicoes[dimensao-1][dimensao-1];
+                        pontoDeSalvamentoPosterior = this.posicoes[dimensao-1][0];
                         proxima = this.posicoes[dimensao-1][dimensao-2];
                     } else if(linha == dimensao-1 && coluna == 0) {
+                        pontoDeSalvamentoAnterior = this.posicoes[dimensao-1][0];
+                        pontoDeSalvamentoPosterior = this.posicoes[0][0];
                         proxima = this.posicoes[dimensao-2][0];
                     } else if(linha == 0) {
                         // topo

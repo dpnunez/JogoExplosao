@@ -6,6 +6,7 @@ package game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  *
@@ -129,6 +130,27 @@ public class TestSuit {
         System.out.println("=======================\n\n\n\n\n\n");
     }
     
+    
+    
+    public void testeImobilizar() {
+        System.out.println("Imobilizar: ");
+        
+        List<Jogador> jogadores = new ArrayList<>();
+        jogadores.add(new Jogador("Daniel", 0, 0));
+        jogadores.add(new Jogador("Bruno", 5, 0));
+        Dado d = new Dado();
+        Tabuleiro t = new Tabuleiro(6);
+        
+        JogoDaExplosao jogo = new JogoDaExplosao(d, t, jogadores);
+        jogo.getJogadorAtual().setInstantaneo(new Imobilizar());
+        jogo.usarInstantaneo(jogo.getJogadorAtual());
+        
+        jogo.mudarJogador();
+        jogo.andar(2, jogo.getJogadorAtual());
+
+        System.out.println("=======================\n\n\n\n\n\n");
+    }
+    
     public static void main(String[] args) {
         TestSuit t = new TestSuit();
         
@@ -137,5 +159,6 @@ public class TestSuit {
         t.testeAsasDeIcaro();
         t.testeEmpurrar();
         t.testeVelocidade();
+        t.testeImobilizar();
     }
 }

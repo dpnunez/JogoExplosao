@@ -136,53 +136,59 @@ public class JogoDaExplosao {
     }
     
     public void andar(int valorProp, Jogador j) {
-        int valor = valorProp;
-        if(this.andarDuplicadoAtivo) valor = valorProp * 2;
-        if(valor > 6) valor = 6;
-        
-        PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
-        System.out.println("Jogador " + j.getNome() + " deve andar " + valor);
-            // 1 2 3 andar
-        int construidas=0;
-        // andar(valor+1)
-        while(construidas<valor ) {
-            posicaoAtualJogador = posicaoAtualJogador.getProximaPosicao();
-            List<Jogador> jogadoresNaPosicaoAtual = new ArrayList<>(); 
-            
-            if(posicaoAtualJogador.getX() == j.getPosicaoInicialX() && posicaoAtualJogador.getY() == j.getPosicaoInicialY()) {
-                System.out.println("GANHOU");
-                this.ganhador = j;
-                break;
-            }
-            
-            for(int i=0; i<this.jogadores.size(); i++) {
-                Jogador jVerificar  = this.jogadores.get(i);
-                int posX = jVerificar.getPosicaoX();
-                int posY = jVerificar.getPosicaoY();
-                boolean ehMesmaPosicao =
-                        posX == posicaoAtualJogador.getX() &&
-                        posY == posicaoAtualJogador.getY();
-                if(jVerificar != j && ehMesmaPosicao) {
-                    jogadoresNaPosicaoAtual.add(jVerificar);
+        if (j.getImovel()) {
+            System.out.println("Você está imobilizado!");
+            j.setImovel(false);
+        } else {
+            int valor = valorProp;
+            if(this.andarDuplicadoAtivo) valor = valorProp * 2;
+            if(valor > 6) valor = 6;
+
+            PosicaoTabuleiro posicaoAtualJogador = this.tabuleiro.getPosicao(j.getPosicaoX(), j.getPosicaoY());
+            System.out.println("Jogador " + j.getNome() + " deve andar " + valor);
+                // 1 2 3 andar
+            int construidas=0;
+            // andar(valor+1)
+            while(construidas<valor ) {
+                posicaoAtualJogador = posicaoAtualJogador.getProximaPosicao();
+                List<Jogador> jogadoresNaPosicaoAtual = new ArrayList<>(); 
+
+                if(posicaoAtualJogador.getX() == j.getPosicaoInicialX() && posicaoAtualJogador.getY() == j.getPosicaoInicialY()) {
+                    System.out.println("GANHOU");
+                    this.ganhador = j;
+                    break;
+                }
+
+                for(int i=0; i<this.jogadores.size(); i++) {
+                    Jogador jVerificar  = this.jogadores.get(i);
+                    int posX = jVerificar.getPosicaoX();
+                    int posY = jVerificar.getPosicaoY();
+                    boolean ehMesmaPosicao =
+                            posX == posicaoAtualJogador.getX() &&
+                            posY == posicaoAtualJogador.getY();
+                    if(jVerificar != j && ehMesmaPosicao) {
+                        jogadoresNaPosicaoAtual.add(jVerificar);
+                    }
+                }
+
+                // SE jogadorAtual.passivo == Empurrar e SE tiver outro jogador na posicaoAtual
+                if(j.getPoderPassivo() instanceof Empurrar && !jogadoresNaPosicaoAtual.isEmpty()) {
+                    this.empurar(j, jogadoresNaPosicaoAtual);
+                }
+                if(!posicaoAtualJogador.getConstruida()) {
+                    construidas++;
+                    posicaoAtualJogador.setConstruida(true);
                 }
             }
-            
-            // SE jogadorAtual.passivo == Empurrar e SE tiver outro jogador na posicaoAtual
-            if(j.getPoderPassivo() instanceof Empurrar && !jogadoresNaPosicaoAtual.isEmpty()) {
-                this.empurar(j, jogadoresNaPosicaoAtual);
-            }
-            if(!posicaoAtualJogador.getConstruida()) {
-                construidas++;
-                posicaoAtualJogador.setConstruida(true);
-            }
-        }
 
-        j.setPosicaoX(posicaoAtualJogador.getX());
-        j.setPosicaoY(posicaoAtualJogador.getY());
-        if(this.andarDuplicadoAtivo) {
-            System.out.println("Desativando velocidade duplicada");
-            this.andarDuplicadoAtivo = false;
+            j.setPosicaoX(posicaoAtualJogador.getX());
+            j.setPosicaoY(posicaoAtualJogador.getY());
+            if(this.andarDuplicadoAtivo) {
+                System.out.println("Desativando velocidade duplicada");
+                this.andarDuplicadoAtivo = false;
+            } 
         }
+        
     }
     
     public void tratativaValorDado(int valor, Jogador j) {
@@ -226,12 +232,49 @@ public class JogoDaExplosao {
         }
     }
     
-    public void usarInstantaneo(Jogador j) {
-        if(j.getPoderInstantaneo() instanceof Velocidade) {
-            // usar velocidade
-            System.out.println("Velocidade ativa nessa rodada!");
-            this.andarDuplicadoAtivo = true;
+    public void usarVelocidade() {
+        System.out.println("Velocidade ativa nessa rodada!");
+        this.andarDuplicadoAtivo = true;
+    }
+    
+    public void usarImobilizar(Jogador imobilizado) {
+        System.out.println("O jogador " + imobilizado.getNome() + " foi imobilizado!");
+        imobilizado.setImovel(true);
+    }
+    
+    public void mostrarListaFiltrada(List<Jogador> lista) {
+        for(int i=0; i<lista.size(); i++) {
+            System.out.println(i  + " - " + lista.get(i).getNome());
         }
+    }
+    
+    public void usarInstantaneo(Jogador j) {
+        Item instantaneo = j.getPoderInstantaneo();
+        Scanner entrada = new Scanner(System.in);
+        if(instantaneo instanceof Velocidade) {
+            // usar velocidade
+            this.usarVelocidade();
+        } else if(instantaneo instanceof Imobilizar) {
+            System.out.println("Imobilizar ativado! Escolha qual jogador você deseja imobilizar por uma rodada (fallback é o próximo jogador): ");
+            List<Jogador> possiveisImobilizaveis = new ArrayList<>();
+            for(int i=0; i<this.jogadores.size(); i++) {
+                if(this.jogadores.get(i) != j)
+                    possiveisImobilizaveis.add(this.jogadores.get(i));
+            }
+            
+            mostrarListaFiltrada(possiveisImobilizaveis);
+            System.out.print("> ");
+            int escolha = entrada.nextByte();
+            Jogador jogadorASerImobilizado;
+            if(escolha < possiveisImobilizaveis.size()) {
+                jogadorASerImobilizado = possiveisImobilizaveis.get(escolha);
+            } else {
+                jogadorASerImobilizado = this.jogadores.get(this.getIndexProximoJogador());
+            }
+            
+            this.usarImobilizar(jogadorASerImobilizado);    
+        }
+        j.setInstantaneo(null);
     }
     
     public String getMenu() {
@@ -269,7 +312,16 @@ public class JogoDaExplosao {
             this.tratarEscolha(escolha);
             }
         case 3 -> {
-                //Usa os poderes instantaneos
+                if(this.getJogadorAtual().getPoderInstantaneo() == null) {
+                    System.out.println("Você nao tem item instantaneo! ");
+                    Scanner entrada = new Scanner(System.in);
+                    System.out.println(this.getMenu());
+                    System.out.print(">");
+                    escolha = entrada.nextByte();
+                    this.tratarEscolha(escolha);
+                } else {
+                    this.usarInstantaneo(this.getJogadorAtual());
+                }
             }
         default -> {
             //Se tudo der errado lança o dado
@@ -357,14 +409,21 @@ public class JogoDaExplosao {
             jogo.getTabuleiro().printBoardOnConsole();
             System.out.println("Estado dos jogadores: ");
             jogo.getPosicoesJogadores();
-            System.out.println("\nJogador atual: " + jogo.getJogadorAtual().getNome());
+            System.out.println("\nJogador atual: " + jogo.getJogadorAtual());
 
             System.out.println("\n");
 
-            System.out.println(jogo.getMenu());
-            System.out.print(">");
-            escolha = entrada.nextByte();
-            jogo.tratarEscolha(escolha);
+            
+            if(jogo.getJogadorAtual().getImovel()) {
+                // skipar jogada e trocar flag caso jogador atual esteja imobilizado
+                System.out.println("Jogador imovel, a rodada será passada!");
+                jogo.getJogadorAtual().setImovel(false);
+            } else {
+                System.out.println(jogo.getMenu());
+                System.out.print(">");
+                escolha = entrada.nextByte();
+                jogo.tratarEscolha(escolha);
+            }
             if(jogo.getGanhador() != null) {
                 System.out.println(jogo.getGanhador().getNome() + " GANHOU!!");
                 break;
